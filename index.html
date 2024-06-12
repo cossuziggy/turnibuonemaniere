@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Shift Scheduler</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <h1>Gestione Turni Ristorante</h1>
+
+  <button id="createNew" class="btn">Crea Nuova Scheda</button>
+
+  <form id="restaurantForm">
+    <label for="restaurantName">Nome Ristorante:</label>
+    <input type="text" id="restaurantName" required>
+    <label for="weekPicker">Seleziona Settimana:</label>
+    <input type="week" id="weekPicker" required>
+    <button type="button" id="saveRestaurant" class="btn">Salva Ristorante</button>
+    <button type="button" id="deleteWeek" class="btn">Elimina Settimana</button>
+  </form>
+
+  <label for="savedWeeks">Settimane Salvate:</label>
+  <select id="savedWeeks"></select>
+  <button type="button" id="loadWeek" class="btn">Carica Settimana Salvata</button>
+  
+  <form id="employeeForm">
+    <label for="employeeName">Nome Dipendente:</label>
+    <input type="text" id="employeeName" required>
+    <label for="employeeRole">Ruolo:</label>
+    <select id="employeeRole" required>
+      <option value="Sala">Sala</option>
+      <option value="Banco">Banco</option>
+      <option value="Cucina">Cucina</option>
+      <option value="Laboratorio">Laboratorio</option>
+    </select>
+    <label for="weeklyHours">Monte Ore Settimanale:</label>
+    <input type="number" id="weeklyHours" required>
+    <button type="button" id="addEmployee" class="btn">Aggiungi Dipendente</button>
+    <button type="button" id="deleteAllEmployees" class="btn">Elimina Tutti i Dipendenti</button>
+  </form>
+
+  <div id="employees"></div>
+  
+  <div id="schedule">
+    <h2>Gestione Turni</h2>
+    <div class="day-schedule" data-day="0">
+      <h3>Lunedì</h3>
+      <table class="shift-table" data-day="0">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+    <div class="day-schedule" data-day="1">
+      <h3>Martedì</h3>
+      <table class="shift-table" data-day="1">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+    <div class="day-schedule" data-day="2">
+      <h3>Mercoledì</h3>
+      <table class="shift-table" data-day="2">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+    <div class="day-schedule" data-day="3">
+      <h3>Giovedì</h3>
+      <table class="shift-table" data-day="3">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+    <div class="day-schedule" data-day="4">
+      <h3>Venerdì</h3>
+      <table class="shift-table" data-day="4">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+    <div class="day-schedule" data-day="5">
+      <h3>Sabato</h3>
+      <table class="shift-table" data-day="5">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+    <div class="day-schedule" data-day="6">
+      <h3>Domenica</h3>
+      <table class="shift-table" data-day="6">
+        <thead>
+          <tr>
+            <th>Dipendente (Ruolo)</th>
+            <!-- Generare colonne con mezz'ore -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Turni dipendenti -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <button id="saveShifts" class="btn">Salva Turni</button>
+  <button id="clearShifts" class="btn">Elimina Turni</button>
+
+  <form id="economicDataForm">
+    <h2>Inserisci Dati Economici</h2>
+    <label for="generalHourlyCost">Costo Medio Orario Generale:</label>
+    <input type="number" id="generalHourlyCost">
+    <label for="averageHourlyCostSala">Costo Medio Orario Sala:</label>
+    <input type="number" id="averageHourlyCostSala" required>
+    <label for="averageHourlyCostBanco">Costo Medio Orario Banco:</label>
+    <input type="number" id="averageHourlyCostBanco" required>
+    <label for="averageHourlyCostCucina">Costo Medio Orario Cucina:</label>
+    <input type="number" id="averageHourlyCostCucina" required>
+    <label for="averageHourlyCostLaboratorio">Costo Medio Orario Laboratorio:</label>
+    <input type="number" id="averageHourlyCostLaboratorio" required>
+    
+    <table id="economicDataTable">
+      <thead>
+        <tr>
+          <th>Giorno</th>
+          <th>Fatturato Previsto</th>
+          <th>Fatturato Previsto Netto</th>
+          <th>Fatturato Reale</th>
+          <th>Fatturato Reale Netto</th>
+          <th>Costo del Lavoro</th>
+          <th>Produttività Prevista</th>
+          <th>Produttività Reale</th>
+          <th>Incidenza Costo del Lavoro (Previsto)</th>
+          <th>Incidenza Costo del Lavoro (Reale)</th>
+          <th>Fatturato Reale su Previsto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lunedì</td>
+          <td><input type="number" id="forecastRevenueMonday" required></td>
+          <td id="netForecastRevenueMonday">0</td>
+          <td><input type="number" id="actualRevenueMonday" required></td>
+          <td id="netActualRevenueMonday">0</td>
+          <td id="laborCostMonday">0</td>
+          <td id="productivityForecastMonday">0</td>
+          <td id="productivityActualMonday">0</td>
+          <td id="laborCostForecastMonday">0%</td>
+          <td id="laborCostActualMonday">0%</td>
+          <td id="actualVsForecastMonday">0%</td>
+        </tr>
+        <tr>
+          <td>Martedì</td>
+          <td><input type="number" id="forecastRevenueTuesday" required></td>
+          <td id="netForecastRevenueTuesday">0</td>
+          <td><input type="number" id="actualRevenueTuesday" required></td>
+          <td id="netActualRevenueTuesday">0</td>
+          <td id="laborCostTuesday">0</td>
+          <td id="productivityForecastTuesday">0</td>
+          <td id="productivityActualTuesday">0</td>
+          <td id="laborCostForecastTuesday">0%</td>
+          <td id="laborCostActualTuesday">0%</td>
+          <td id="actualVsForecastTuesday">0%</td>
+        </tr>
+        <tr>
+          <td>Mercoledì</td>
+          <td><input type="number" id="forecastRevenueWednesday" required></td>
+          <td id="netForecastRevenueWednesday">0</td>
+          <td><input type="number" id="actualRevenueWednesday" required></td>
+          <td id="netActualRevenueWednesday">0</td>
+          <td id="laborCostWednesday">0</td>
+          <td id="productivityForecastWednesday">0</td>
+          <td id="productivityActualWednesday">0</td>
+          <td id="laborCostForecastWednesday">0%</td>
+          <td id="laborCostActualWednesday">0%</td>
+          <td id="actualVsForecastWednesday">0%</td>
+        </tr>
+        <tr>
+          <td>Giovedì</td>
+          <td><input type="number" id="forecastRevenueThursday" required></td>
+          <td id="netForecastRevenueThursday">0</td>
+          <td><input type="number" id="actualRevenueThursday" required></td>
+          <td id="netActualRevenueThursday">0</td>
+          <td id="laborCostThursday">0</td>
+          <td id="productivityForecastThursday">0</td>
+          <td id="productivityActualThursday">0</td>
+          <td id="laborCostForecastThursday">0%</td>
+          <td id="laborCostActualThursday">0%</td>
+          <td id="actualVsForecastThursday">0%</td>
+        </tr>
+        <tr>
+          <td>Venerdì</td>
+          <td><input type="number" id="forecastRevenueFriday" required></td>
+          <td id="netForecastRevenueFriday">0</td>
+          <td><input type="number" id="actualRevenueFriday" required></td>
+          <td id="netActualRevenueFriday">0</td>
+          <td id="laborCostFriday">0</td>
+          <td id="productivityForecastFriday">0</td>
+          <td id="productivityActualFriday">0</td>
+          <td id="laborCostForecastFriday">0%</td>
+          <td id="laborCostActualFriday">0%</td>
+          <td id="actualVsForecastFriday">0%</td>
+        </tr>
+        <tr>
+          <td>Sabato</td>
+          <td><input type="number" id="forecastRevenueSaturday" required></td>
+          <td id="netForecastRevenueSaturday">0</td>
+          <td><input type="number" id="actualRevenueSaturday" required></td>
+          <td id="netActualRevenueSaturday">0</td>
+          <td id="laborCostSaturday">0</td>
+          <td id="productivityForecastSaturday">0</td>
+          <td id="productivityActualSaturday">0</td>
+          <td id="laborCostForecastSaturday">0%</td>
+          <td id="laborCostActualSaturday">0%</td>
+          <td id="actualVsForecastSaturday">0%</td>
+        </tr>
+        <tr>
+          <td>Domenica</td>
+          <td><input type="number" id="forecastRevenueSunday" required></td>
+          <td id="netForecastRevenueSunday">0</td>
+          <td><input type="number" id="actualRevenueSunday" required></td>
+          <td id="netActualRevenueSunday">0</td>
+          <td id="laborCostSunday">0</td>
+          <td id="productivityForecastSunday">0</td>
+          <td id="productivityActualSunday">0</td>
+          <td id="laborCostForecastSunday">0%</td>
+          <td id="laborCostActualSunday">0%</td>
+          <td id="actualVsForecastSunday">0%</td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" id="addEconomicData" class="btn">Aggiungi Dati Economici</button>
+    <button type="button" id="deleteEconomicData" class="btn">Elimina Dati Economici</button>
+  </form>
+  
+  <div id="dashboard">
+    <h2>Dashboard</h2>
+    <div id="hoursSummary"></div>
+    <div id="economicSummary">
+      <h3>Riassunto Economico</h3>
+      <p id="totalForecastRevenue">Fatturato Previsto Totale: 0</p>
+      <p id="totalNetForecastRevenue">Fatturato Previsto Netto Totale: 0</p>
+      <p id="totalActualRevenue">Fatturato Reale Totale: 0</p>
+      <p id="totalNetActualRevenue">Fatturato Reale Netto Totale: 0</p>
+      <p id="totalHourlyCost">Costo Totale del Lavoro: 0</p>
+      <p id="laborCostPercentageForecast">Incidenza Costo del Lavoro (Previsto): 0%</p>
+      <p id="laborCostPercentageActual">Incidenza Costo del Lavoro (Reale): 0%</p>
+      <p id="actualToForecastRevenuePercentage">Fatturato Reale su Previsto: 0%</p>
+      <p id="totalProductivityForecast">Produttività Prevista Totale: 0</p>
+      <p id="totalProductivityActual">Produttività Reale Totale: 0</p>
+    </div>
+    <div id="roleSummary"></div>
+  </div>
+  
+  <button id="saveAll" class="btn">Salva Tutto</button>
+  <button id="loadAll" class="btn">Carica Dati</button>
+  <button id="printPdf" class="btn">Stampa PDF</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
